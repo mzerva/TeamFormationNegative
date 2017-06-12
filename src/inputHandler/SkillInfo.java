@@ -4,19 +4,25 @@ import java.util.HashMap;
 
 public class SkillInfo {
 	private HashMap<Integer,ArrayList<String>> userSkills = new HashMap<Integer,ArrayList<String>>();
-	private HashMap<String,Integer> skillDistribution = new HashMap<String,Integer>();
+	private HashMap<String,ArrayList<Integer>> skillUsers = new HashMap<String,ArrayList<Integer>>();
+	private ArrayList<String> skills = new ArrayList<String>();
 	
-	public SkillInfo(HashMap<Integer,ArrayList<String>> userSkills, HashMap<String,Integer> skillDistribution){
+	public SkillInfo(HashMap<Integer,ArrayList<String>> userSkills, HashMap<String,ArrayList<Integer>> skillDistribution, ArrayList<String> skills){
 		this.userSkills=userSkills;
-		this.skillDistribution=skillDistribution;
+		this.skillUsers=skillDistribution;
+		this.skills=skills;
 	}
 	
 	public HashMap<Integer,ArrayList<String>> getUserSkills(){
 		return userSkills;
 	}
 	
-	public HashMap<String,Integer> getSkillDistribution(){
-		return skillDistribution;
+	public HashMap<String,ArrayList<Integer>> getSkillUsers(){
+		return skillUsers;
+	}
+	
+	public ArrayList<String> getSkills(){
+		return skills;
 	}
 
 }
