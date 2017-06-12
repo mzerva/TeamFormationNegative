@@ -7,6 +7,9 @@ public class InputManager {
 	private String networkPath = new String();
 	private String userPath = new String();
 	private String skillPath = new String();
+	private ArrayList<String> skillsList = new ArrayList<String>();
+	private HashMap<Integer,ArrayList<String>> userInfo = new HashMap<Integer,ArrayList<String>>();
+	private HashMap<String,ArrayList<Integer>> skillInfo = new HashMap<String,ArrayList<Integer>>();
 	
 	public InputManager(String pairValuesPath, String networkPath, String userPath, String skillPath){
 		this.pairValuesPath=pairValuesPath;
@@ -47,14 +50,14 @@ public class InputManager {
 	}
 	
 	public SkillInfo getSkillInfo(){
-		SkillInfo skills = new SkillInfo(getUserInfo(), getSkillDistribution());
+		getUserInfo();
+		getSkillUsers();
+		SkillInfo skills = new SkillInfo(userInfo, skillInfo, skillsList);
 		return skills;
 		
 	}
 	
-	public HashMap<Integer,ArrayList<String>> getUserInfo(){
-		HashMap<Integer,ArrayList<String>> userInfo = new HashMap<Integer,ArrayList<String>>();
-		
+	public void getUserInfo(){	
 		FileReader reader = new FileReader(userPath);
 		reader.initReader();
 		reader.retrieveData();
@@ -68,21 +71,22 @@ public class InputManager {
 			}
 			userInfo.put(Integer.parseInt(fields[0]), skillList);
 		}	
-		return userInfo;
 	}
 	
-	public HashMap<String,Integer> getSkillDistribution(){
-		HashMap<String,Integer> skillDist = new HashMap<String,Integer>();
-		
+	public void getSkillUsers(){		
 		FileReader reader = new FileReader(skillPath);
 		reader.initReader();
 		reader.retrieveData();
 		ArrayList<String> lines = reader.getData();
 		for(int i=0;i<lines.size();i++){
 			String fields[] = lines.get(i).split("\t");
-			skillDist.put(fields[0], Integer.parseInt(fields[1]));
+			String tokens[]=fields[1].split(",");
+			ArrayList<Integer> userList = new ArrayList<Integer>();
+			for(int j=0;j<tokens.length;j++){
+				userList.add(Integer.parseInt(tokens[j]));
+			}
+			skillInfo.put(fields[0], userList);
+			skillsList.add(fields[0]);
 		}
-		
-		return skillDist;
 	}
 }
