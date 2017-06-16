@@ -2,22 +2,17 @@ package algorithm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import inputHandler.Network;
-import inputHandler.PairValues;
 import inputHandler.SkillInfo;
 
 public class TeamFormationAlgorithm {
 	//inputFields
 	private Network network;
 	private SkillInfo skillInfo;
-	//private HashMap<Integer,HashMap<Integer,PairValues>> pairInfo;
-	
+
 	//algorithmFields
-	//private HashMap<String,Integer> initialTask = new HashMap<String,Integer>();
 	private ArrayList<String> initialTask = new ArrayList<String>();
 	private ArrayList<String> task = new ArrayList<String>();
 	private String rarestSkill = new String();
