@@ -11,6 +11,9 @@ public class InputManager {
 	private HashMap<Integer,ArrayList<String>> userInfo = new HashMap<Integer,ArrayList<String>>();
 	private HashMap<String,ArrayList<Integer>> skillInfo = new HashMap<String,ArrayList<Integer>>();
 	
+	//node1+","+node2
+	private HashMap<String,Integer> distances = new HashMap<String,Integer>();
+	
 	public InputManager(String pairValuesPath, String networkPath, String userPath, String skillPath){
 		this.pairValuesPath=pairValuesPath;
 		this.networkPath=networkPath;
@@ -18,13 +21,33 @@ public class InputManager {
 		this.skillPath=skillPath;
 	}
 	
-	public HashMap<Integer,HashMap<Integer,PairValues>> getPairInfo(){
-		HashMap<Integer,HashMap<Integer,PairValues>> pairInfo = new HashMap<Integer,HashMap<Integer,PairValues>>();
+	public HashMap<Integer,ArrayList<Integer>> getPairInfo(){
+		HashMap<Integer,ArrayList<Integer>> pairInfo = new HashMap<Integer,ArrayList<Integer>>();
 		
-		//doJob
+		FileReader reader = new FileReader(pairValuesPath);
+		reader.initReader();
+		reader.retrieveData();
+		ArrayList<String> lines = reader.getData();
+		
+		for(int i=0;i<lines.size();i++){
+			String tokens[] = lines.get(i).split("\t");
+			if(!pairInfo.containsKey(Integer.parseInt(tokens[0]))){
+				ArrayList<Integer> tmp = new ArrayList<Integer>();
+				tmp.add(Integer.parseInt(tokens[1]));
+				pairInfo.put(Integer.parseInt(tokens[0]), tmp);
+			}
+			else{
+				pairInfo.get(Integer.parseInt(tokens[0])).add(Integer.parseInt(tokens[1]));
+			}
+			distances.put(tokens[0]+","+tokens[1], Integer.parseInt(tokens[2]));
+		}
 		
 		return pairInfo;
 		
+	}
+	
+	public HashMap<String, Integer> getCompatibleDistances(){
+		return distances;
 	}
 	
 	public Network getNetwork(){
