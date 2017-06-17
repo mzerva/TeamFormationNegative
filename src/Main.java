@@ -1,5 +1,9 @@
+import java.util.ArrayList;
+import java.util.Random;
+
 import algorithm.TeamFormationAlgorithm;
 import inputHandler.InputManager;
+import inputHandler.SkillInfo;
 
 public class Main {
 
@@ -23,7 +27,24 @@ public class Main {
 		String skillPath="data\\slashdot\\skills.txt";
 				
 		InputManager manager = new InputManager(pairValuesPath,networkPath,userPath,skillPath);
-		TeamFormationAlgorithm algorithm = new TeamFormationAlgorithm(manager.getNetwork(), manager.getSkillInfo(),manager.getPairInfo(),manager.getCompatibleDistances());
+		manager.retrieveNetwork();
+		manager.retrieveSkillInfo();
+		
+		ArrayList<String> initialTask = produceTask(3,manager.getSkillInfo());
+		
+		manager.retrievePairInfo(initialTask);
+		
+		TeamFormationAlgorithm algorithm = new TeamFormationAlgorithm(initialTask,manager.getNetwork(), manager.getSkillInfo(),manager.getPairInfo(),manager.getCompatibleDistances());
 		algorithm.start();
+	}
+	
+	public static ArrayList<String> produceTask(int numOfTasks, SkillInfo skillInfo){
+		ArrayList<String> initialTask = new ArrayList<String>();
+		Random rndGen = new Random();
+		for(int i=0;i<numOfTasks;i++){
+			String temp = skillInfo.getSkills().get(rndGen.nextInt(skillInfo.getSkills().size()));
+			initialTask.add(temp);
+		}
+		return initialTask;
 	}
 }
