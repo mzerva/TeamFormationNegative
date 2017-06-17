@@ -1,6 +1,10 @@
 package inputHandler;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class InputManager {
 	private String pairValuesPath= new String();
@@ -10,6 +14,9 @@ public class InputManager {
 	private ArrayList<String> skillsList = new ArrayList<String>();
 	private HashMap<Integer,ArrayList<String>> userInfo = new HashMap<Integer,ArrayList<String>>();
 	private HashMap<String,ArrayList<Integer>> skillInfo = new HashMap<String,ArrayList<Integer>>();
+	private HashMap<Integer,ArrayList<Integer>> pairInfo = new HashMap<Integer,ArrayList<Integer>>();
+	private Network network;
+	private SkillInfo skills;
 	
 	//node1+","+node2
 	private HashMap<String,Integer> distances = new HashMap<String,Integer>();
@@ -22,25 +29,38 @@ public class InputManager {
 	}
 	
 	public HashMap<Integer,ArrayList<Integer>> getPairInfo(){
-		HashMap<Integer,ArrayList<Integer>> pairInfo = new HashMap<Integer,ArrayList<Integer>>();
-		
-		FileReader reader = new FileReader(pairValuesPath);
-		reader.initReader();
-		reader.retrieveData();
-		ArrayList<String> lines = reader.getData();
-		
-		for(int i=0;i<lines.size();i++){
-			String tokens[] = lines.get(i).split("\t");
-			if(!pairInfo.containsKey(Integer.parseInt(tokens[0]))){
-				ArrayList<Integer> tmp = new ArrayList<Integer>();
-				tmp.add(Integer.parseInt(tokens[1]));
-				pairInfo.put(Integer.parseInt(tokens[0]), tmp);
+		return pairInfo;
+	}
+	
+	public HashMap<Integer,ArrayList<Integer>> retrievePairInfo(ArrayList<String> initialTask){	
+		File file = new File(pairValuesPath);
+		try 
+		 { 
+			Scanner inputReader = new Scanner(new FileInputStream(file)); 
+			while(inputReader.hasNextLine()){
+				String strLine=inputReader.nextLine();
+				String tokens[] = strLine.split("\t");
+				for(int i=0;i<initialTask.size();i++){
+					if(skillInfo.get(initialTask.get(i)).contains(Integer.parseInt(tokens[0])) || skillInfo.get(initialTask.get(i)).contains(Integer.parseInt(tokens[1]))){
+						if(!pairInfo.containsKey(Integer.parseInt(tokens[0]))){
+							ArrayList<Integer> tmp = new ArrayList<Integer>();
+							tmp.add(Integer.parseInt(tokens[1]));
+							pairInfo.put(Integer.parseInt(tokens[0]), tmp);
+						}
+						else{
+							pairInfo.get(Integer.parseInt(tokens[0])).add(Integer.parseInt(tokens[1]));
+						}
+						distances.put(tokens[0]+","+tokens[1], Integer.parseInt(tokens[2]));
+						break;
+					}
+				}
 			}
-			else{
-				pairInfo.get(Integer.parseInt(tokens[0])).add(Integer.parseInt(tokens[1]));
-			}
-			distances.put(tokens[0]+","+tokens[1], Integer.parseInt(tokens[2]));
-		}
+			inputReader.close();
+		 } 
+		 catch(FileNotFoundException e) 
+		 { 
+			 System.out.printf("File %s was not found or could not be opened.\n",pairValuesPath); 
+		 }
 		
 		return pairInfo;
 		
@@ -51,6 +71,10 @@ public class InputManager {
 	}
 	
 	public Network getNetwork(){
+		return network;
+	}
+	
+	public void retrieveNetwork(){
 		FileReader reader = new FileReader(networkPath);
 		reader.initReader();
 		reader.retrieveData();
@@ -68,16 +92,17 @@ public class InputManager {
 			String edge = tokens[0]+","+tokens[1];
 			edges.put(edge, Integer.parseInt(tokens[2]));
 		}
-		Network network = new Network(edges,nodes);
-		return network;
+		network = new Network(edges,nodes);
 	}
 	
 	public SkillInfo getSkillInfo(){
+		return skills;
+	}
+	
+	public void retrieveSkillInfo(){
 		getUserInfo();
 		getSkillUsers();
-		SkillInfo skills = new SkillInfo(userInfo, skillInfo, skillsList);
-		return skills;
-		
+		skills = new SkillInfo(userInfo, skillInfo, skillsList);		
 	}
 	
 	public void getUserInfo(){	
