@@ -21,30 +21,21 @@ public class TeamFormationAlgorithm {
 	private HashMap<Integer,ArrayList<Integer>> compatibleList = new HashMap<Integer,ArrayList<Integer>>();
 	private HashMap<String,Integer> compatibleDistances = new HashMap<String,Integer>();
 	
-	public TeamFormationAlgorithm(Network network, SkillInfo skillInfo, HashMap<Integer,ArrayList<Integer>> compatibleList, HashMap<String,Integer> compatibleDistances/*, HashMap<Integer,HashMap<Integer,PairValues>> pairInfo*/){
+	public TeamFormationAlgorithm(ArrayList<String> initialTask,Network network, SkillInfo skillInfo, HashMap<Integer,ArrayList<Integer>> compatibleList, HashMap<String,Integer> compatibleDistances/*, HashMap<Integer,HashMap<Integer,PairValues>> pairInfo*/){
+		this.initialTask=initialTask;
 		this.network=network;
 		this.skillInfo=skillInfo;
 		this.compatibleList=compatibleList;
 		this.compatibleDistances=compatibleDistances;
-		//this.pairInfo=pairInfo;
-	}
-
-	public void start(){
-		produceTask(3);
-		rankSkills();
-		algorithm();
-	}
-	
-	public void produceTask(int numOfTasks){
-		Random rndGen = new Random();
-		for(int i=0;i<numOfTasks;i++){
-			String temp = skillInfo.getSkills().get(rndGen.nextInt(skillInfo.getSkills().size()));
-			initialTask.add(temp);
-		}
 		for(int i=0;i<initialTask.size()-1;i++){
 			System.out.print(initialTask.get(i)+" , ");
 		}
 		System.out.println(initialTask.get(initialTask.size()-1));
+	}
+
+	public void start(){
+		rankSkills();
+		algorithm();
 	}
 	
 	public void rankSkills(){
@@ -95,7 +86,7 @@ public class TeamFormationAlgorithm {
 					}
 					
 					//choose most compatible user
-					int user=getMostCompatible(users,star);
+					int user=getBestCandidate(users,star);
 					
 					if(user!=-1){
 						//add to team
@@ -162,10 +153,6 @@ public class TeamFormationAlgorithm {
 				System.out.print(best.getTeam().get(i)+"   ,   ");
 			}
 			System.out.println(best.getTeam().get(best.getTeam().size()-1));
-			/*System.out.println("Skills covered:");
-			for(int i=0;i<best.getCoveredSkills().size();i++){
-				System.out.print(best.getCoveredSkills().get(i)+"   ,   ");
-			}*/
 		}
 		else{
 			System.out.println("No team found!");
@@ -224,17 +211,14 @@ public class TeamFormationAlgorithm {
 		return taskSkills;
 	}
 	
-	public int getMostCompatible(ArrayList<Integer> candidates, StarTeam team){
+	public int getBestCandidate(ArrayList<Integer> candidates, StarTeam team){
 		ArrayList<Integer> notCompatible = new ArrayList<Integer>();
-		//ArrayList<Integer> compatibles = new ArrayList<Integer>();
 		int compatible=-1;
 		int max_c=-1;
 		
 		for(int i=0;i<candidates.size();i++){
 			int max=0;
 			for(int j=0;j<team.getTeam().size();j++){
-				//System.out.println("candidate: "+candidates.get(i));
-				//System.out.println("team_member: "+team.getTeam().get(j));
 				if(compatibleList.containsKey(candidates.get(i)) && compatibleList.containsKey(team.getTeam().get(j))){
 					if(!compatibleList.get(candidates.get(i)).contains(team.getTeam().get(j)) && !compatibleList.get(team.getTeam().get(j)).contains(candidates.get(i))){
 						notCompatible.add(candidates.get(i));
@@ -265,7 +249,6 @@ public class TeamFormationAlgorithm {
 				}
 			}
 			if(!notCompatible.contains(candidates.get(i))){
-				//compatibles.add(candidates.get(i));
 				if(max_c==-1){
 					max_c=max;
 					compatible= candidates.get(i);
@@ -294,10 +277,6 @@ public class TeamFormationAlgorithm {
 		else{
 			return compatible2;
 		}
-	}
-	
-	public boolean checkComponent(/*place arguments here*/){
-		return true;//check when
 	}
 	
 }
