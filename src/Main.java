@@ -9,33 +9,84 @@ public class Main {
 
 	public static void main(String[] args){
 		
-		//Epinions
-		/*
-		//String pairValuesPath="data\\epinions\\more_positive_paths.txt";
-		//String pairValuesPath="data\\epinions\\one_positive_path.txt";
-		String pairValuesPath="data\\epinions\\no_negative_paths.txt";
-		String networkPath="data\\epinions\\network.txt"; 
-		String userPath="data\\epinions\\users.txt";
-		String skillPath="data\\epinions\\skills.txt";*/
+		/********** PARAMETERS **********/
+		int numOfSkills=3;
+		int numOfIterations=5;
+		String dataset="slashdot";
+		/* 1 : no_negative_paths, 2 : more_positive_paths, 3 : one_positive_path, 4 : no_negative_edge */
+		int compatibility_mode=1;
+		String resultPath="results\\first_results.txt";
+		/********** ********** **********/
 		
-		//SlashDot
-		//String pairValuesPath="data\\slashdot\\more_positive_paths.txt";
-		//String pairValuesPath="data\\slashdot\\one_positive_path.txt";
-		String pairValuesPath="data\\slashdot\\no_negative_paths.txt";
-		String networkPath="data\\slashdot\\network.txt"; 
-		String userPath="data\\slashdot\\users.txt";
-		String skillPath="data\\slashdot\\skills.txt";
-				
+		
+		String pairValuesPath;
+		
+		if(compatibility_mode==1){
+			pairValuesPath="data\\"+dataset+"\\no_negative_paths.txt";
+		}
+		else if(compatibility_mode==2){
+			pairValuesPath="data\\"+dataset+"\\more_positive_paths.txt";
+		}
+		else if(compatibility_mode==3){
+			pairValuesPath="data\\"+dataset+"\\one_positive_path.txt";
+		}
+		else{
+			pairValuesPath="data\\"+dataset+"\\distances.txt";
+		}
+			
+		String networkPath="data\\"+dataset+"\\network.txt"; 
+		String userPath="data\\"+dataset+"\\users.txt";
+		String skillPath="data\\"+dataset+"\\skills.txt";
+		
+		ArrayList<String> results = new ArrayList<String>();
+		
+		for(int i=0;i<numOfIterations;i++){	
+			
+			if(compatibility_mode<4){
+				results.add(runCompatibilityAlgorithm(numOfSkills,pairValuesPath, networkPath, userPath, skillPath));
+			}
+			else{
+				results.add(runNoNegativeAlgorithm(numOfSkills, pairValuesPath, networkPath, userPath, skillPath));
+			}
+			
+		}
+		
+		if(numOfIterations>1){
+			FileWriter writer = new FileWriter(resultPath);
+			writer.initWriter();
+			writer.writeData(results);
+		}
+	}
+	
+	
+	public static String runCompatibilityAlgorithm(int numOfSkills,String pairValuesPath, String networkPath, String userPath, String skillPath){
+		InputManager manager = new InputManager(pairValuesPath,networkPath,userPath,skillPath);
+		manager.retrieveSkillInfo();
+		
+		ArrayList<String> initialTask = produceTask(numOfSkills,manager.getSkillInfo());
+		
+		manager.retrievePairInfo(initialTask);
+		
+		TeamFormationAlgorithm algorithm = new TeamFormationAlgorithm(initialTask,manager.getSkillInfo(),manager.getPairInfo(),manager.getCompatibleDistances());
+		algorithm.start();
+		
+		return algorithm.getResult();
+	}
+	
+	public static String runNoNegativeAlgorithm(int numOfSkills,String pairValuesPath, String networkPath, String userPath, String skillPath){
 		InputManager manager = new InputManager(pairValuesPath,networkPath,userPath,skillPath);
 		manager.retrieveNetwork();
 		manager.retrieveSkillInfo();
 		
-		ArrayList<String> initialTask = produceTask(3,manager.getSkillInfo());
+		ArrayList<String> initialTask = produceTask(numOfSkills,manager.getSkillInfo());
 		
-		manager.retrievePairInfo(initialTask);
+		manager.retrieveDistancesInfo(initialTask);
 		
-		TeamFormationAlgorithm algorithm = new TeamFormationAlgorithm(initialTask,manager.getNetwork(), manager.getSkillInfo(),manager.getPairInfo(),manager.getCompatibleDistances());
+		TeamFormationAlgorithm algorithm = new TeamFormationAlgorithm(initialTask,manager.getNetwork(), manager.getSkillInfo(),manager.getCompatibleDistances());
 		algorithm.start();
+		
+		return algorithm.getResult();
+		
 	}
 	
 	public static ArrayList<String> produceTask(int numOfTasks, SkillInfo skillInfo){
