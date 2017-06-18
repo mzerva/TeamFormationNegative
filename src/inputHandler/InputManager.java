@@ -32,6 +32,30 @@ public class InputManager {
 		return pairInfo;
 	}
 	
+	public HashMap<String,Integer> retrieveDistancesInfo(ArrayList<String> initialTask){	
+		File file = new File(pairValuesPath);
+		try 
+		 { 
+			Scanner inputReader = new Scanner(new FileInputStream(file)); 
+			while(inputReader.hasNextLine()){
+				String strLine=inputReader.nextLine();
+				String tokens[] = strLine.split("\t");
+				for(int i=0;i<initialTask.size();i++){
+					if(skillInfo.get(initialTask.get(i)).contains(Integer.parseInt(tokens[0])) || skillInfo.get(initialTask.get(i)).contains(Integer.parseInt(tokens[1]))){
+						distances.put(tokens[0]+","+tokens[1], Integer.parseInt(tokens[2]));
+					}
+				}
+			}
+			inputReader.close();
+		 } 
+		 catch(FileNotFoundException e) 
+		 { 
+			 System.out.printf("File %s was not found or could not be opened.\n",pairValuesPath); 
+		 }
+		
+		return distances;
+	}
+	
 	public HashMap<Integer,ArrayList<Integer>> retrievePairInfo(ArrayList<String> initialTask){	
 		File file = new File(pairValuesPath);
 		try 
