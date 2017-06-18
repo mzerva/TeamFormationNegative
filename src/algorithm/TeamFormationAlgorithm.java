@@ -17,19 +17,39 @@ public class TeamFormationAlgorithm {
 	private ArrayList<String> task = new ArrayList<String>();
 	private String rarestSkill = new String();
 	private HashMap<Integer,StarTeam> teams = new HashMap<Integer,StarTeam>();
+	private String result = new String();
 	
 	private HashMap<Integer,ArrayList<Integer>> compatibleList = new HashMap<Integer,ArrayList<Integer>>();
 	private HashMap<String,Integer> compatibleDistances = new HashMap<String,Integer>();
 	
-	public TeamFormationAlgorithm(ArrayList<String> initialTask,Network network, SkillInfo skillInfo, HashMap<Integer,ArrayList<Integer>> compatibleList, HashMap<String,Integer> compatibleDistances/*, HashMap<Integer,HashMap<Integer,PairValues>> pairInfo*/){
+	private boolean compatibility_mode;
+	private int best_diameter=0;
+	
+	public TeamFormationAlgorithm(ArrayList<String> initialTask,Network network, SkillInfo skillInfo,HashMap<String,Integer> compatibleDistances){
 		this.initialTask=initialTask;
 		this.network=network;
 		this.skillInfo=skillInfo;
-		this.compatibleList=compatibleList;
 		this.compatibleDistances=compatibleDistances;
+		compatibility_mode=false;
 		for(int i=0;i<initialTask.size()-1;i++){
+			result+=initialTask.get(i)+",";
 			System.out.print(initialTask.get(i)+" , ");
 		}
+		result+=initialTask.get(initialTask.size()-1)+";";
+		System.out.println(initialTask.get(initialTask.size()-1));
+	}
+	
+	public TeamFormationAlgorithm(ArrayList<String> initialTask, SkillInfo skillInfo, HashMap<Integer,ArrayList<Integer>> compatibleList, HashMap<String,Integer> compatibleDistances){
+		this.initialTask=initialTask;
+		this.skillInfo=skillInfo;
+		this.compatibleList=compatibleList;
+		this.compatibleDistances=compatibleDistances;
+		compatibility_mode=true;
+		for(int i=0;i<initialTask.size()-1;i++){
+			result+=initialTask.get(i)+",";
+			System.out.print(initialTask.get(i)+" , ");
+		}
+		result+=initialTask.get(initialTask.size()-1)+";";
 		System.out.println(initialTask.get(initialTask.size()-1));
 	}
 
@@ -85,8 +105,15 @@ public class TeamFormationAlgorithm {
 						users.add(skillInfo.getSkillUsers().get(task.get(j)).get(m));
 					}
 					
-					//choose most compatible user
-					int user=getBestCandidate(users,star);
+					
+					//choose best candidate
+					int user;
+					if(compatibility_mode==true){
+						user=getBestCompatibleCandidate(users,star);
+					}
+					else{
+						user=getBestNoNegativeCandidate(users,star);
+					}
 					
 					if(user!=-1){
 						//add to team
@@ -101,20 +128,13 @@ public class TeamFormationAlgorithm {
 						}
 					}
 					else{
-						//StarTeam noTeam = new StarTeam();
 						teams.put(rareUser, null);
 						break;
 					}
 				}
 			}
 			if(!teams.containsKey(rareUser)){
-				//if(star.getCoveredSkills().size()==task.size()){
-					teams.put(rareUser, star);
-				//}
-				//else{
-					//StarTeam noTeam = new StarTeam();
-				//	teams.put(rareUser, null);
-				//}
+				teams.put(rareUser, star);
 			}
 		}
 		ArrayList<Integer> toRemove = new ArrayList<Integer>();
@@ -126,14 +146,22 @@ public class TeamFormationAlgorithm {
 		for(int i=0;i<toRemove.size();i++){
 			teams.remove(toRemove.get(i));
 		}
+		
+		result+=teams.keySet().size()+";";
+		
 		if(teams.keySet().size()==1){
 			System.out.println("Found 1 team:");
 			for(Integer key : teams.keySet()){
 				System.out.println("Starnode's "+key+" team: ");
 				for(int i=0;i<teams.get(key).getTeam().size()-1;i++){
+					result+=teams.get(key).getTeam().get(i)+",";
 					System.out.print(teams.get(key).getTeam().get(i)+" , ");
 				}
+				result+=teams.get(key).getTeam().get(teams.get(key).getTeam().size()-1)+";";
 				System.out.println(teams.get(key).getTeam().get(teams.get(key).getTeam().size()-1));
+				
+				getBestTeam();
+				result+=teams.get(key).getTeam().size()+";"+best_diameter;
 			}
 		}
 		else if(teams.keySet().size()>1){
@@ -150,11 +178,15 @@ public class TeamFormationAlgorithm {
 			StarTeam best=getBestTeam();
 			System.out.println("Best team:");
 			for(int i=0;i<best.getTeam().size()-1;i++){
+				result+=best.getTeam().get(i)+",";
 				System.out.print(best.getTeam().get(i)+"   ,   ");
 			}
+			result+=best.getTeam().get(best.getTeam().size()-1);
 			System.out.println(best.getTeam().get(best.getTeam().size()-1));
+			result+=best.getTeam().size()+";"+best_diameter;
 		}
 		else{
+			result+="0;-;-;-";
 			System.out.println("No team found!");
 		}
 	}
@@ -198,6 +230,8 @@ public class TeamFormationAlgorithm {
 				}
 			}
 		}
+		
+		best_diameter=total_max;
 		return teams.get(node);
 	}
 	
@@ -211,7 +245,67 @@ public class TeamFormationAlgorithm {
 		return taskSkills;
 	}
 	
-	public int getBestCandidate(ArrayList<Integer> candidates, StarTeam team){
+	public int getBestNoNegativeCandidate(ArrayList<Integer> candidates, StarTeam team){
+		ArrayList<Integer> notCompatible = new ArrayList<Integer>();
+		int compatible=-1;
+		int max_c=-1;
+		
+		for(int i=0;i<candidates.size();i++){
+			int max=0;
+			boolean not_compatible=false;
+			for(int j=0;j<team.getTeam().size();j++){
+				if(network.getEdges().containsKey(candidates.get(i)+","+team.getTeam().get(j))){
+					if(network.getEdges().get(candidates.get(i)+","+team.getTeam().get(j))<0){
+						not_compatible=true;
+						notCompatible.add(candidates.get(i));
+					}
+				}
+				if(network.getEdges().containsKey(team.getTeam().get(j)+","+candidates.get(i))){
+					if(network.getEdges().get(team.getTeam().get(j)+","+candidates.get(i))<0){
+						not_compatible=true;
+						notCompatible.add(candidates.get(i));
+					}
+				}
+				if(not_compatible==false){
+					if(compatibleDistances.containsKey(candidates.get(i)+","+team.getTeam().get(j))){
+						if(max<compatibleDistances.get(candidates.get(i)+","+team.getTeam().get(j))){
+							max=compatibleDistances.get(candidates.get(i)+","+team.getTeam().get(j));
+						}
+					}
+					else if(compatibleDistances.containsKey(team.getTeam().get(j)+","+candidates.get(i))){
+						if(max<compatibleDistances.get(team.getTeam().get(j)+","+candidates.get(i))){
+							max=compatibleDistances.get(team.getTeam().get(j)+","+candidates.get(i));
+						}
+					}
+					else{
+						notCompatible.add(candidates.get(i));
+					}
+				}
+			}
+			if(!notCompatible.contains(candidates.get(i))){
+				if(max_c==-1){
+					max_c=max;
+					compatible= candidates.get(i);
+				}
+				else if(max_c>max){
+					max_c=max;
+					compatible= candidates.get(i);
+				}
+				else if(max==max_c){
+					int tmp=handleTies(compatible, candidates.get(i));
+					if(tmp==candidates.get(i)){
+						max_c=max;
+						compatible=candidates.get(i);
+					}
+				}
+			}
+		}
+		
+		return compatible;
+	}
+	
+	
+	public int getBestCompatibleCandidate(ArrayList<Integer> candidates, StarTeam team){
 		ArrayList<Integer> notCompatible = new ArrayList<Integer>();
 		int compatible=-1;
 		int max_c=-1;
@@ -277,6 +371,10 @@ public class TeamFormationAlgorithm {
 		else{
 			return compatible2;
 		}
+	}
+	
+	public String getResult(){
+		return result;
 	}
 	
 }
