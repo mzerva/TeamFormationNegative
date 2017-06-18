@@ -181,7 +181,7 @@ public class TeamFormationAlgorithm {
 				result+=best.getTeam().get(i)+",";
 				System.out.print(best.getTeam().get(i)+"   ,   ");
 			}
-			result+=best.getTeam().get(best.getTeam().size()-1);
+			result+=best.getTeam().get(best.getTeam().size()-1)+";";
 			System.out.println(best.getTeam().get(best.getTeam().size()-1));
 			result+=best.getTeam().size()+";"+best_diameter;
 		}
