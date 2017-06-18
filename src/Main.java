@@ -10,28 +10,32 @@ public class Main {
 	public static void main(String[] args){
 		
 		/********** PARAMETERS **********/
-		int numOfSkills=3;
-		int numOfIterations=5;
+		int numOfSkills=10;
+		int numOfIterations=50;
 		String dataset="slashdot";
 		/* 1 : no_negative_paths, 2 : more_positive_paths, 3 : one_positive_path, 4 : no_negative_edge */
 		int compatibility_mode=1;
-		String resultPath="results\\first_results.txt";
 		/********** ********** **********/
 		
-		
+		String resultPath;
 		String pairValuesPath;
 		
 		if(compatibility_mode==1){
 			pairValuesPath="data\\"+dataset+"\\no_negative_paths.txt";
+			resultPath="results\\"+dataset+"_"+numOfSkills+"_"+numOfIterations+"_no_negative_paths.txt";
+			
 		}
 		else if(compatibility_mode==2){
 			pairValuesPath="data\\"+dataset+"\\more_positive_paths.txt";
+			resultPath="results\\"+dataset+"_"+numOfSkills+"_"+numOfIterations+"_more_positive_paths.txt";
 		}
 		else if(compatibility_mode==3){
 			pairValuesPath="data\\"+dataset+"\\one_positive_path.txt";
+			resultPath="results\\"+dataset+"_"+numOfSkills+"_"+numOfIterations+"_one_positive_path.txt";
 		}
 		else{
 			pairValuesPath="data\\"+dataset+"\\distances.txt";
+			resultPath="results\\"+dataset+"_"+numOfSkills+"_"+numOfIterations+"_no_negative_edge.txt";
 		}
 			
 		String networkPath="data\\"+dataset+"\\network.txt"; 
