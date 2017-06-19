@@ -83,14 +83,14 @@ public class ShortestPathCompatibility {
 		}
 
 		Queue<Integer> q = new LinkedList<Integer>();
-		q.add(src);
+		q.offer(src);
 
 		// visited contains the same elements with q
 		// its used only for fast check up for nodes that are already in q
 		Set<Integer> visited = new HashSet<Integer>();
 		visited.add(src);
 
-		// Distance of source nodefrom itself is always 0
+		// Distance of source node from itself is always 0
 		dist.get(src).set(0);
 
 		// Positive shortest path of source node from itself is always 1
@@ -99,14 +99,11 @@ public class ShortestPathCompatibility {
 		int p, x, sign;
 
 		while (!q.isEmpty()) {
-			p = q.remove();
+			p = q.poll();
 			visited.remove(p);
 
 			// for each adjacent node of p
 			for (Entry<Node, Integer> en : g.getNode(p).getAdjacencyAsMap().entrySet()) {
-
-				// edge sign
-				sign = en.getValue().intValue();
 
 				// adjacent node
 				x = en.getKey().getID();
@@ -125,6 +122,9 @@ public class ShortestPathCompatibility {
 							System.exit(0);
 						dist.get(x).set(dist.get(p).getValue() + 1);
 					}
+
+					// edge sign
+					sign = en.getValue().intValue();
 
 					// update positive and negative shortest paths
 					if (sign == 1) {

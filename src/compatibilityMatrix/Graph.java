@@ -1,4 +1,5 @@
 package compatibilityMatrix;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -56,7 +57,8 @@ public class Graph {
 	 * @param time
 	 */
 	public void addEdge(int src, int trg, int sign) {
-		nodes.get(src).addEdge(nodes.get(trg), sign);
+		if (!nodes.get(src).getAdjacency().contains(trg))
+			nodes.get(src).addEdge(nodes.get(trg), sign);
 	}
 
 	/**
@@ -85,7 +87,7 @@ public class Graph {
 	public int size() {
 		return nodes.size();
 	}
-	
+
 	/**
 	 * Load Graph
 	 * 
@@ -123,6 +125,5 @@ public class Graph {
 		br.close();
 
 		System.out.println("Graph loaded....");
-
 	}
 }
