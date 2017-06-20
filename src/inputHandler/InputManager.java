@@ -28,6 +28,11 @@ public class InputManager {
 		this.skillPath=skillPath;
 	}
 	
+	public InputManager(String userPath, String skillPath){
+		this.userPath=userPath;
+		this.skillPath=skillPath;
+	}
+	
 	public HashMap<Integer,ArrayList<Integer>> getPairInfo(){
 		return pairInfo;
 	}
