@@ -1,4 +1,6 @@
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 import algorithm.TeamFormationAlgorithm;
@@ -9,57 +11,62 @@ public class Main {
 
 	public static void main(String[] args){
 		
+		
 		/********** PARAMETERS **********/
-		int numOfSkills=10;
-		int numOfIterations=50;
-		String dataset="slashdot";
-		/* 1 : no_negative_paths, 2 : more_positive_paths, 3 : one_positive_path, 4 : no_negative_edge */
+		int numOfSkills=5;
+		String dataset="epinions";
+		// 1 : no_negative_paths, 2 : more_positive_paths, 3 : one_positive_path, 4 : no_negative_edge 
 		int compatibility_mode=1;
+		String task="";
 		/********** ********** **********/
+		
+		System.out.print("Started at: ");
+		System.out.println( new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) );
+		
 		
 		String resultPath;
 		String pairValuesPath;
 		
 		if(compatibility_mode==1){
-			pairValuesPath="data\\"+dataset+"\\no_negative_paths.txt";
-			resultPath="results\\"+dataset+"_"+numOfSkills+"_"+numOfIterations+"_no_negative_paths.txt";
-			
+			pairValuesPath="/home/formation/Desktop/compatibilityLists/"+dataset+"/no_negative_paths.txt";
+			resultPath="/home/formation/Desktop/results/"+dataset+"/"+dataset+"_"+numOfSkills+"_no_negative_paths.txt";
+
 		}
 		else if(compatibility_mode==2){
-			pairValuesPath="data\\"+dataset+"\\more_positive_paths.txt";
-			resultPath="results\\"+dataset+"_"+numOfSkills+"_"+numOfIterations+"_more_positive_paths.txt";
+			pairValuesPath="/home/formation/Desktop/compatibilityLists/"+dataset+"/more_positive_paths.txt";
+			resultPath="/home/formation/Desktop/results/"+dataset+"/"+dataset+"_"+numOfSkills+"_more_positive_paths.txt";
 		}
 		else if(compatibility_mode==3){
-			pairValuesPath="data\\"+dataset+"\\one_positive_path.txt";
-			resultPath="results\\"+dataset+"_"+numOfSkills+"_"+numOfIterations+"_one_positive_path.txt";
+			pairValuesPath="/home/formation/Desktop/compatibilityLists/"+dataset+"/one_positive_path.txt";
+			resultPath="/home/formation/Desktop/results/"+dataset+"/"+dataset+"_"+numOfSkills+"_one_positive_path.txt";
 		}
 		else{
-			pairValuesPath="data\\"+dataset+"\\distances.txt";
-			resultPath="results\\"+dataset+"_"+numOfSkills+"_"+numOfIterations+"_no_negative_edge.txt";
+			pairValuesPath="/home/formation/Desktop/compatibilityLists/"+dataset+"/distances.txt";
+			resultPath="/home/formation/Desktop/results/"+dataset+"/"+dataset+"_"+numOfSkills+"_no_negative_edge.txt";
 		}
 			
-		String networkPath="data\\"+dataset+"\\network.txt"; 
-		String userPath="data\\"+dataset+"\\users.txt";
-		String skillPath="data\\"+dataset+"\\skills.txt";
+		String networkPath="data/"+dataset+"/network.txt"; 
+		String userPath="data/"+dataset+"/users.txt";
+		String skillPath="data/"+dataset+"/skills.txt";
 		
-		ArrayList<String> results = new ArrayList<String>();
-		
-		for(int i=0;i<numOfIterations;i++){	
+		String result;
 			
-			if(compatibility_mode<4){
-				results.add(runCompatibilityAlgorithm(numOfSkills,pairValuesPath, networkPath, userPath, skillPath));
-			}
-			else{
-				results.add(runNoNegativeAlgorithm(numOfSkills, pairValuesPath, networkPath, userPath, skillPath));
-			}
+		if(compatibility_mode<4){
+			result=runCompatibilityAlgorithm(numOfSkills,pairValuesPath, networkPath, userPath, skillPath);
 			
 		}
-		
-		if(numOfIterations>1){
-			FileWriter writer = new FileWriter(resultPath);
-			writer.initWriter();
-			writer.writeData(results);
+		else{
+			result=runNoNegativeAlgorithm(numOfSkills, pairValuesPath, networkPath, userPath, skillPath);
 		}
+		
+		System.out.println(result);
+		
+//		FileWriter writer = new FileWriter(resultPath);
+//		writer.initAppendWriter();
+//		writer.appendLine(result);
+		
+		System.out.print("Finished at: ");
+		System.out.println( new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) );
 	}
 	
 	
