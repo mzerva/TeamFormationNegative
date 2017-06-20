@@ -33,10 +33,10 @@ public class TeamFormationAlgorithm {
 		compatibility_mode=false;
 		for(int i=0;i<initialTask.size()-1;i++){
 			result+=initialTask.get(i)+",";
-			System.out.print(initialTask.get(i)+" , ");
+			//System.out.print(initialTask.get(i)+" , ");
 		}
 		result+=initialTask.get(initialTask.size()-1)+";";
-		System.out.println(initialTask.get(initialTask.size()-1));
+		//System.out.println(initialTask.get(initialTask.size()-1));
 	}
 	
 	public TeamFormationAlgorithm(ArrayList<String> initialTask, SkillInfo skillInfo, HashMap<Integer,ArrayList<Integer>> compatibleList, HashMap<String,Integer> compatibleDistances){
@@ -47,10 +47,10 @@ public class TeamFormationAlgorithm {
 		compatibility_mode=true;
 		for(int i=0;i<initialTask.size()-1;i++){
 			result+=initialTask.get(i)+",";
-			System.out.print(initialTask.get(i)+" , ");
+			//System.out.print(initialTask.get(i)+" , ");
 		}
 		result+=initialTask.get(initialTask.size()-1)+";";
-		System.out.println(initialTask.get(initialTask.size()-1));
+		//System.out.println(initialTask.get(initialTask.size()-1));
 	}
 
 	public void start(){
@@ -150,44 +150,44 @@ public class TeamFormationAlgorithm {
 		result+=teams.keySet().size()+";";
 		
 		if(teams.keySet().size()==1){
-			System.out.println("Found 1 team:");
+			//System.out.println("Found 1 team:");
 			for(Integer key : teams.keySet()){
-				System.out.println("Starnode's "+key+" team: ");
+				//System.out.println("Starnode's "+key+" team: ");
 				for(int i=0;i<teams.get(key).getTeam().size()-1;i++){
 					result+=teams.get(key).getTeam().get(i)+",";
-					System.out.print(teams.get(key).getTeam().get(i)+" , ");
+					//System.out.print(teams.get(key).getTeam().get(i)+" , ");
 				}
 				result+=teams.get(key).getTeam().get(teams.get(key).getTeam().size()-1)+";";
-				System.out.println(teams.get(key).getTeam().get(teams.get(key).getTeam().size()-1));
+				//System.out.println(teams.get(key).getTeam().get(teams.get(key).getTeam().size()-1));
 				
 				getBestTeam();
 				result+=teams.get(key).getTeam().size()+";"+best_diameter;
 			}
 		}
 		else if(teams.keySet().size()>1){
-			for(Integer key : teams.keySet()){
-				System.out.println("Starnode's "+key+" team: ");
-				for(int i=0;i<teams.get(key).getTeam().size()-1;i++){
-					System.out.print(teams.get(key).getTeam().get(i)+" , ");
-				}
-				System.out.println(teams.get(key).getTeam().get(teams.get(key).getTeam().size()-1));
-			}
-			
-			System.out.println("Total teams found: "+teams.size());
+//			for(Integer key : teams.keySet()){
+//				System.out.println("Starnode's "+key+" team: ");
+//				for(int i=0;i<teams.get(key).getTeam().size()-1;i++){
+//					System.out.print(teams.get(key).getTeam().get(i)+" , ");
+//				}
+//				System.out.println(teams.get(key).getTeam().get(teams.get(key).getTeam().size()-1));
+//			}
+//			
+//			System.out.println("Total teams found: "+teams.size());
 			
 			StarTeam best=getBestTeam();
-			System.out.println("Best team:");
+			//System.out.println("Best team:");
 			for(int i=0;i<best.getTeam().size()-1;i++){
 				result+=best.getTeam().get(i)+",";
-				System.out.print(best.getTeam().get(i)+"   ,   ");
+				//System.out.print(best.getTeam().get(i)+"   ,   ");
 			}
 			result+=best.getTeam().get(best.getTeam().size()-1)+";";
-			System.out.println(best.getTeam().get(best.getTeam().size()-1));
+			//System.out.println(best.getTeam().get(best.getTeam().size()-1));
 			result+=best.getTeam().size()+";"+best_diameter;
 		}
 		else{
 			result+="0;-;-;-";
-			System.out.println("No team found!");
+			//System.out.println("No team found!");
 		}
 	}
 	
@@ -213,7 +213,7 @@ public class TeamFormationAlgorithm {
 					}
 				}
 			}
-			System.out.println("Max distance of "+starNode+"'s team: "+max);
+			//System.out.println("Max distance of "+starNode+"'s team: "+max);
 			if(total_max==-1){
 				total_max=max;
 				node=starNode;
