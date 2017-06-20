@@ -25,6 +25,24 @@ public class FileWriter {
 		 }
 	}
 	
+	public void initAppendWriter(){
+		file = new File(outputPath);
+		try 
+		 { 
+			outputWriter = new PrintWriter(new FileOutputStream(outputPath,true)); 
+		 } 
+		 catch(FileNotFoundException e) 
+		 { 
+			 System.out.printf("Error opening the file %s.\n",outputPath);
+		 }
+	}
+	
+	public void appendLine(String line){
+		outputWriter.println(line);
+		outputWriter.flush();
+		outputWriter.close();
+	}
+	
 	public void writeData(ArrayList<String> data){
 		for(int i=0;i<data.size();i++){
 			outputWriter.println(data.get(i));
